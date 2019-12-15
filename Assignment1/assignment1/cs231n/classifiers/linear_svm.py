@@ -57,7 +57,7 @@ def svm_loss_naive(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
@@ -81,7 +81,17 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    num_train=X.shape[0]
+    scores=X.dot(W)
+    loss=0.0
+    correct_class_scores = scores[np.arange(num_train), y].reshape(num_train, 1)
+    margin=np.maximum(0,scores-correct_class_scores+1)
+    margin[np.arange(num_train),y]=0
+    loss=margin.sum()/num_train
+
+    loss+=reg*np.sum(W*W)
+
+
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -96,7 +106,15 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    indicators = margin
+    indicators[margin > 0] = 1
+    correct_indicators = np.sum(indicators, axis=1)
+    indicators[range(X.shape[0]), y] -= correct_indicators.T
+
+    dW += np.dot(X.T, indicators)
+    dW /= X.shape[0]
+
+    dW += 2 * reg * W
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
